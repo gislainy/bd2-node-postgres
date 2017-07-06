@@ -1,0 +1,99 @@
+<html ng-app="bd2Companhia">
+
+<head>
+  <title>Companhia - Node + PostregSQL</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" media="screen">
+  <!--<link href="https://bootswatch.com/journal/bootstrap.min.css" rel="stylesheet">-->
+</head>
+
+<body ng-controller="companhiaController">
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand">BD2 - Companhia</a>
+      </div>
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav">
+          <li><a ng-click="ativarTab('funcionario')">Funcionário</a></li>
+          <li><a ng-click="ativarTab('departamento')">Departamento</a></li>
+          <li><a ng-click="ativarTab('dependente')">Dependente</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div class="container">
+    <div ng-show="tabActive == 'funcionario'">
+      <table class="table table-sm table-hover">
+        <thead class="thead-inverse">
+          <tr>
+            <th>CPF</th>
+            <th>Nome</th>
+            <th>Sobrenome</th>
+            <th>Data nascimento</th>
+            <th>Salário</th>
+            <th>Departamento</th>
+          </tr>
+        </thead>
+        <tbody ng-repeat="func in funcionario">
+          <tr>
+            <th scope="row">{{func.cpf}}</th>
+            <td>{{func.nome}}</td>
+            <td>{{func.sobrenome}}</td>
+            <td>{{func.data_nasc | date:'dd-MM-yyyy'}}</td>
+            <td>{{func.salario}}</td>
+            <td>{{func.dno}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div ng-show="tabActive == 'departamento'">
+      <table class="table table-sm table-hover">
+        <thead class="thead-inverse">
+          <tr>
+            <th>Número</th>
+            <th>Nome</th>
+            <th>Gerente CPF</th>
+            <th>Data início</th>
+          </tr>
+        </thead>
+        <tbody ng-repeat="dep in departamento">
+          <tr>
+            <th scope="row">{{dep.dnumero}}</th>
+            <td>{{dep.dnome}}</td>
+            <td>{{dep.ger_cpf}}</td>
+            <td>{{dep.ger_inicio_data | date:'dd-MM-yyyy'}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div ng-show="tabActive == 'dependente'">
+      <table class="table table-sm table-hover">
+        <thead class="thead-inverse">
+          <tr>
+            <th>CPF Responsável</th>
+            <th>Nome</th>
+            <th>Data de nascimento</th>
+            <th>Relacionamento</th>
+          </tr>
+        </thead>
+        <tbody ng-repeat="dep in dependente">
+          <tr>
+            <th scope="row">{{dep.cpf}}</th>
+            <td>{{dep.nome}}</td>
+            <td>{{dep.gen}}</td>
+            <td>{{dep.data_nasc | date:'dd-MM-yyyy'}}</td>
+            <td>{{dep.relacionamento}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+<script src="//code.jquery.com/jquery-2.2.4.min.js" type="text/javascript"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+  crossorigin="anonymous"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.6/angular.min.js"></script>
+<script src="js/angular.js"></script>
+
+</html>
