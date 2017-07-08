@@ -18,7 +18,7 @@
           <li><a ng-click="ativarTab('funcionario')">Funcionário</a></li>
           <li><a ng-click="ativarTab('departamento')">Departamento</a></li>
           <li><a ng-click="ativarTab('dependente')">Dependente</a></li>
-		  <li><a ng-click="ativarTab('gerentes_departamentos')">Gerentes por departamento</a></li>
+          <li><a ng-click="ativarTab('gerentes_departamentos')">Gerentes por departamento</a></li>
         </ul>
       </div>
     </div>
@@ -89,39 +89,82 @@
         </tbody>
       </table>
     </div>
-	<div ng-show="tabActive == 'gerentes_departamentos'">
+    <div ng-show="tabActive == 'gerentes_departamentos'">
+      <div style="float: right">
+        <button type="button" class="btn btn-primary" ng-click="ativarTab('gerentes_departamentos_form')">Adicionar departamento</button>
+      </div>
       <table class="table table-sm table-hover">
         <thead class="thead-inverse">
           <tr>
             <th>Nr. dep.</th>
             <th>Nome departamento</th>
-			<th>CPF Gerente</th>
-			<th>Nome Gerente</th>
+            <th>CPF Gerente</th>
+            <th>Nome Gerente</th>
             <th>Sobrenome Gerente</th>
             <th>Nascimento Gerente</th>
             <th>Salário do Gerente</th>
             <th>CPF supervisor do Gerente</th>
-			<th>Sexo do gerente</th>
-			<th>Endereço do Gerente</th>
+            <th>Sexo do gerente</th>
+            <th>Endereço do Gerente</th>
             <th>Data de inicio na gerência</th>
           </tr>
         </thead>
         <tbody ng-repeat="func_dep in gerentes_departamentos">
-          <tr>
-            <th scope="row">{{func_dep.dnumero}}</th>			
-			<td>{{func_dep.dnome}}</td>
-			<td>{{func_dep.cpf}}</td>
-			<td>{{func_dep.nome}}</td>
-			<td>{{func_dep.sobrenome}}</td>
-			<td>{{func_dep.data_nasc | date:'dd-MM-yyyy'}}</td> 
-			<td>{{func_dep.salario}}</td>
-			<td>{{func_dep.super_cpf}}</td>
-			<td>{{func_dep.gen}}</td>
-			<td>{{func_dep.endereco}}</td>
-			<td>{{func_dep.ger_inicio_data | date:'dd-MM-yyyy'}}</td>
+          <tr ng-click="departamento_editar(func_dep.dnome)">
+            <th scope="row">{{func_dep.dnumero}}</th>
+            <td>{{func_dep.dnome}}</td>
+            <td>{{func_dep.cpf}}</td>
+            <td>{{func_dep.nome}}</td>
+            <td>{{func_dep.sobrenome}}</td>
+            <td>{{func_dep.data_nasc | date:'dd-MM-yyyy'}}</td>
+            <td>{{func_dep.salario}}</td>
+            <td>{{func_dep.super_cpf}}</td>
+            <td>{{func_dep.gen}}</td>
+            <td>{{func_dep.endereco}}</td>
+            <td>{{func_dep.ger_inicio_data | date:'dd-MM-yyyy'}}</td>
           </tr>
         </tbody>
       </table>
+    </div>
+    <div ng-show="tabActive == 'gerentes_departamentos_form'">
+      <form class="form-horizontal" name="formDepartamento">
+        <fieldset>
+          <!-- Form Name -->
+          <legend>Adicionar departamento</legend>
+          <!-- Text input-->
+          <div class="form-group">
+            <label class="col-md-4 control-label" for="numero_departamento">Número</label>
+            <div class="col-md-5">
+              <input id="numero_departamento" name="numero_departamento" type="number" placeholder="Digite o número do departamento" class="form-control input-md"
+                ng-required="required" ng-model="dados.departamento.dnumero">
+            </div>
+          </div>
+          <!-- Text input-->
+          <div class="form-group">
+            <label class="col-md-4 control-label" for="nome_departamento">Nome</label>
+            <div class="col-md-5">
+              <input id="nome_departamento" name="nome_departamento" type="text" placeholder="Digite o nome do departamento" class="form-control input-md"
+                ng-required="required" ng-model="dados.departamento.dnome">
+            </div>
+          </div>
+          <!-- Select Basic -->
+          <div class="form-group">
+            <label class="col-md-4 control-label" for="gerente_departamento">Gerente</label>
+            <div class="col-md-5">
+              <select id="gerente_departamento" name="gerente_departamento" class="form-control" ng-model="dados.departamento.ger_cpf">
+                <option ng-repeat="func in funcionario" value="{{func.cpf}}">{{func.nome}}</option>
+              </select>
+            </div>
+          </div>
+        </fieldset>
+        <div style="float: right">
+          <button type="button" class="btn btn-white" ng-click="ativarTab('gerentes_departamentos')">Cancelar</button>
+          <button type="button" class="btn btn-primary" ng-click="departamento_adicionar()">Salvar</button>
+        </div>
+      </form>
+    </div>
+    <div style="margin-top: 5%" class="alert alert-{{alerta.tipo}}" ng-show="alerta.mostrar">
+      <strong>{{alerta.mensagem}}</strong>
     </div>
   </div>
 </body>
