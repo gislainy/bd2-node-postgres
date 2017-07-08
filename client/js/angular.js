@@ -48,6 +48,28 @@ angular.module('bd2Companhia', [])
     }, function errorCallback(response) {
       console.log('Error: ' + response);
     });
+    $scope.dependente_adicionar = function () {
+      var dep_dados = $scope.dados.dependente;
+      if (dep_dados && dep_dados.nome && dep_dados.cpf)
+        $http({
+          url: '/api/v1/dependente/new',
+          method: "POST",
+          data: { 'dependente': dep_dados }
+        })
+          .then(function (response) {
+            $scope.dependente = response && response.data;
+            $scope.tabActive = 'dependente';
+            $scope.dados.departamento = {};
+            $scope.mostrarAlerta('Dependente cadastrado com sucesso');
+
+          },
+          function (response) { // optional
+            console.dir({ response })
+          });
+      else {
+        $scope.mostrarAlerta('Por favor, preencha todos os dados do departamento', true);
+      }
+    };
     $scope.gerentes_departamentos = [];
     $http({
       method: 'GET',

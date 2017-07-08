@@ -16,7 +16,7 @@
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
           <li><a ng-click="ativarTab('funcionario')">Funcionário</a></li>
-          <li><a ng-click="ativarTab('departamento')">Departamento</a></li>
+          <!--<li><a ng-click="ativarTab('departamento')">Departamento</a></li>-->
           <li><a ng-click="ativarTab('dependente')">Dependente</a></li>
           <li><a ng-click="ativarTab('gerentes_departamentos')">Gerentes por departamento</a></li>
         </ul>
@@ -48,7 +48,7 @@
         </tbody>
       </table>
     </div>
-    <div ng-show="tabActive == 'departamento'">
+    <!--<div ng-show="tabActive == 'departamento'">
       <table class="table table-sm table-hover">
         <thead class="thead-inverse">
           <tr>
@@ -67,8 +67,11 @@
           </tr>
         </tbody>
       </table>
-    </div>
+    </div>-->
     <div ng-show="tabActive == 'dependente'">
+      <div style="float: right">
+        <button type="button" class="btn btn-primary" ng-click="ativarTab('gerentes_dependente_form')">Adicionar departamento</button>
+      </div>
       <table class="table table-sm table-hover">
         <thead class="thead-inverse">
           <tr>
@@ -163,6 +166,60 @@
         </div>
       </form>
     </div>
+    <div ng-show="tabActive == 'gerentes_dependente_form'">
+      <form class="form-horizontal" name="formDepartamento">
+        <fieldset>
+          <!-- Form Name -->
+          <legend>Adicionar departamento</legend>
+          <!-- Text input-->
+          <div class="form-group">
+            <label class="col-md-4 control-label" for="nome_dependente">Nome dependente</label>
+            <div class="col-md-5">
+              <input id="numero_departamento" name="nome_dependente" type="text" placeholder="Digite o nome do dependente" class="form-control input-md"
+                ng-required="required" ng-model="dados.dependente.nome">
+            </div>
+          </div>
+          <!-- Text input-->
+          <div class="form-group">
+            <label class="col-md-4 control-label" for="data_nasc_dependente">Data nascimento</label>
+            <div class="col-md-5">
+              <input id="nome_departamento" name="data_nasc_dependente" type="text" placeholder="Digite a data de nascimento" class="form-control input-md"
+                ng-required="required" ng-model="dados.dependente.data_nasc">
+            </div>
+          </div>
+          <!-- Text input-->
+          <div class="form-group">
+            <label class="col-md-4 control-label" for="relacionamento_dependente">Relacionamento</label>
+            <div class="col-md-5">
+              <input id="nome_departamento" name="relacionamento_dependente" type="text" placeholder="Digite o relacionamento do dependente com funcionario" class="form-control input-md"
+                ng-required="required" ng-model="dados.dependente.relacionamento">
+            </div>
+          </div>
+          <!-- Select Basic -->
+          <div class="form-group">
+            <label class="col-md-4 control-label" for="gerente_departamento">Gerente</label>
+            <div class="col-md-5">
+              <select id="gerente_departamento" name="gerente_departamento" class="form-control" ng-model="dados.dependente.cpf">
+                <option ng-repeat="func in funcionario" value="{{func.cpf}}">{{func.nome}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-md-4 control-label" for="genero_dependente">Gênero</label>
+            <div class="col-md-5">
+              <select id="gerente_departamento" name="genero_dependente" class="form-control" ng-model="dados.dependente.gen">
+                <option value="F">Feminino</option>
+                <option value="M">Masculino</option>
+              </select>
+            </div>
+          </div>
+        </fieldset>
+        <div style="float: right">
+          <button type="button" class="btn btn-white" ng-click="ativarTab('dependente')">Cancelar</button>
+          <button type="button" class="btn btn-primary" ng-click="dependente_adicionar()">Salvar</button>
+        </div>
+      </form>
+    </div>
     <div style="margin-top: 5%" class="alert alert-{{alerta.tipo}}" ng-show="alerta.mostrar">
       <strong>{{alerta.mensagem}}</strong>
     </div>
@@ -173,5 +230,6 @@
   crossorigin="anonymous"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.6/angular.min.js"></script>
 <script src="js/angular.js"></script>
-
+<script src="https://unpkg.com/custom-input@0.2.0/dist/custom-input.js"></script>
+<script src="https://unpkg.com/angular-datetime-input@5.1.0/dist/datetime.js"></script>
 </html>
