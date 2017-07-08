@@ -65,6 +65,76 @@ CREATE OR REPLACE VIEW v_gerentes_departamentos AS(
 						dp.ger_cpf = func.cpf
 	ORDER BY dp.dnumero
 );
+CREATE OR REPLACE FUNCTION operacoes_em_gerentes_departamentos() RETURNS TRIGGER 
+AS $$
+    BEGIN
+        --
+        -- Está função será responsável por iterceptar qual a operação realizada na visão v_gerentes_departamentos
+        -- e refletir as alterações nas devidas tabelas (departamento e funcionário)
+        --
+        IF (TG_OP = 'DELETE') THEN
+            DELETE FROM departamento WHERE departamento.dnumero = OLD.dnumero;
+            IF (NOT FOUND) THEN 
+            	RETURN NULL; 
+            END IF;
+            
+            RETURN NEW;
+
+        ELSIF (TG_OP = 'UPDATE') THEN
+            UPDATE departamento 
+            SET dnome = NEW.dnome, 
+            	ger_cpf = NEW.cpf,
+            	ger_inicio_data = NEW.ger_inicio_data
+            WHERE departamento.dnumero = OLD.dnumero;
+            
+            IF (TRIM(NEW.cpf) <> '') THEN
+	            UPDATE funcionario 
+	            SET nome = NEW.nome, 
+	            	inicial = NEW.inicial,
+	            	sobrenome = NEW.sobrenome,
+	            	cpf = NEW.cpf,
+	            	data_nasc = NEW.data_nasc,
+	            	salario = NEW.salario,
+	            	super_cpf = NEW.super_cpf,
+	            	dno = NEW.dnumero
+	            WHERE funcionario.cpf = OLD.cpf;
+            END IF;
+			
+            IF (NOT FOUND) THEN 
+            	RETURN NULL; 
+            END IF;
+            
+            RETURN NEW;
+
+        ELSIF (TG_OP = 'INSERT') THEN
+            
+        	INSERT INTO departamento 
+            		VALUES(NEW.dnome,
+            			   NEW.dnumero,
+            			   NEW.cpf,
+            			   NEW.ger_inicio_data);
+            
+            IF (TRIM(NEW.cpf) <> '') THEN
+	            INSERT INTO funcionario
+	            		VALUES (NEW.nome,
+								substring(new.nome,1,1), -- Para obter a inicial do funcionário
+								NEW.sobrenome,
+								NEW.cpf,
+								NEW.data_nasc,
+								NEW.endereco,
+								NEW.gen,
+								NEW.salario,
+								NEW.super_cpf,
+								NEW.dno);
+			END IF;
+			RETURN NEW;
+        END IF;
+    END;
+$$ LANGUAGE plpgsql;
+CREATE TRIGGER intercepta_alteracao_v_gerentes_departamentos
+	INSTEAD OF INSERT OR UPDATE OR DELETE ON v_gerentes_departamentos
+		FOR EACH ROW EXECUTE PROCEDURE operacoes_em_gerentes_departamentos();
+
 `
 
 
