@@ -33,4 +33,13 @@ angular.module('bd2Companhia', [])
     }, function errorCallback(response) {
       console.log('Error: ' + response);
     });
+	$scope.gerentes_departamentos = [];
+    $http({
+      method: 'GET',
+      url: '/api/v1/gerentes_departamentos/all'
+    }).then(function successCallback(response) {
+      $scope.gerentes_departamentos = response && response.data;
+    }, function errorCallback(response) {
+      console.log('Error: ' + response);
+    });
   });

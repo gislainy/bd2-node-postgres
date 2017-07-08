@@ -46,7 +46,26 @@ CREATE TABLE dependente (
     data_nasc date,
     relacionamento varchar(8),
     primary key (cpf, nome)
-);`
+);
+CREATE OR REPLACE VIEW v_gerentes_departamentos AS(
+	SELECT  dp.dnumero, 
+			dp.dnome, 
+			dp.ger_inicio_data,
+			func.nome, 
+			func.sobrenome, 
+			func.inicial, 
+			func.cpf, 
+			func.data_nasc, 
+			func.endereco, 
+			func.gen, 
+			func.salario, 
+			func.super_cpf
+	FROM departamento dp 
+			INNER JOIN funcionario func ON
+						dp.ger_cpf = func.cpf
+	ORDER BY dp.dnumero
+);
+`
 
 
 var pg = require('pg');
