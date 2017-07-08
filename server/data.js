@@ -194,7 +194,7 @@ INSERT INTO func_proj VALUES ('666666613',63,10.0);
 `
 
 var pg = require('pg');
-var conString = "postgres://postgres:123@localhost/bd2companhia";
+var conString = "postgres://postgres:1234@localhost/bd2companhia";
 
 pg.connect(conString, function(err, client, done) {
   if (err) {

@@ -1,4 +1,7 @@
-var schema = `CREATE TABLE funcionario (
+var schema = `
+drop schema public cascade;
+create schema public;
+CREATE TABLE funcionario (
     nome character varying(15) not null,
     inicial char,
     sobrenome character varying(15) not null,
@@ -139,7 +142,7 @@ CREATE TRIGGER intercepta_alteracao_v_gerentes_departamentos
 
 
 var pg = require('pg');
-var conString = "postgres://postgres:123@localhost/bd2companhia";
+var conString = "postgres://postgres:1234@localhost/bd2companhia";
 
 pg.connect(conString, function(err, client, done) {
   if (err) {
