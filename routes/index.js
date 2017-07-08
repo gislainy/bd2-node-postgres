@@ -146,7 +146,7 @@ router.post('/api/v1/dependente/new', (req, res, next) => {
     nome: dependente.nome,
     gen: dependente.gen,
     cpf: dependente.cpf,
-    data_nasc: new Date()
+    data_nasc: new Date(dependente.data_nasc),
   };
   console.dir({ data })
   // Get a Postgres client from the connection pool
@@ -158,7 +158,7 @@ router.post('/api/v1/dependente/new', (req, res, next) => {
       return res.status(500).json({ success: false, data: err });
     }
     // SQL Query > Insert Data
-    client.query('INSERT INTO dependente(nome, cpf, gen, relacionamento, data_nasc) values($1, $2, $3, $4)',
+    client.query('INSERT INTO dependente(nome, cpf, gen, relacionamento, data_nasc) values($1, $2, $3, $4, $5)',
       [data.nome, data.cpf, data.gen, data.relacionamento, data.data_nasc]);
     // SQL Query > Select Data
     const query = client.query('SELECT * FROM dependente');

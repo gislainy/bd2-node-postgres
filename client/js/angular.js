@@ -7,7 +7,10 @@ angular.module('bd2Companhia', [])
       mostrar: false
     };
     $scope.dados = {
-      departamento: {}
+      departamento: {},
+      dependente: {
+        data_nasc: new Date()
+      }
     };
     $scope.ativarTab = function (tab) {
       if ($scope.tabActive != tab)
