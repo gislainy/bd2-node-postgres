@@ -34,6 +34,7 @@
             <th>Data nascimento</th>
             <th>Salário</th>
             <th>Departamento</th>
+            <th></th>
           </tr>
         </thead>
         <tbody ng-repeat="func in funcionario">
@@ -44,6 +45,7 @@
             <td>{{func.data_nasc | date:'dd-MM-yyyy'}}</td>
             <td>{{func.salario}}</td>
             <td>{{func.dno}}</td>
+            <td><label class="label label-primary"  ng-click="clickReajustarPorPecentual(func.cpf)">Reajustar por percentual</label></td>
           </tr>
         </tbody>
       </table>
@@ -167,10 +169,10 @@
       </form>
     </div>
     <div ng-show="tabActive == 'gerentes_dependente_form'">
-      <form class="form-horizontal" name="formDepartamento">
+      <form class="form-horizontal" name="formDependente">
         <fieldset>
           <!-- Form Name -->
-          <legend>Adicionar departamento</legend>
+          <legend>Adicionar dependente</legend>
           <!-- Text input-->
           <div class="form-group">
             <label class="col-md-4 control-label" for="nome_dependente">Nome dependente</label>
@@ -217,6 +219,41 @@
         <div style="float: right">
           <button type="button" class="btn btn-white" ng-click="ativarTab('dependente')">Cancelar</button>
           <button type="button" class="btn btn-primary" ng-click="dependente_adicionar()">Salvar</button>
+        </div>
+      </form>
+    </div>
+    <div ng-show="tabActive == 'reajustar_por_percentual'">
+      <form class="form-horizontal" name="formReajustarPorPercentual">
+        <fieldset>
+          <!-- Form Name -->
+          <legend>Reajustar por percentual</legend>
+          <!-- Text input-->
+          <div class="form-group">
+            <label class="col-md-4 control-label" for="nome_dependente">CPF</label>
+            <div class="col-md-5">
+              <input id="numero_departamento" name="nome_dependente" type="text" placeholder="Digite o nome do dependente" class="form-control input-md"
+                ng-required="required" ng-model="dados.funcionario.cpf" disabled>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-md-4 control-label" for="nome_dependente">Nome</label>
+            <div class="col-md-5">
+              <input id="numero_departamento" name="nome_dependente" type="text" placeholder="Digite o nome do dependente" class="form-control input-md"
+                ng-required="required" ng-model="dados.funcionario.nome" disabled>
+            </div>
+          </div>
+          <!-- Text input-->
+          <div class="form-group">
+            <label class="col-md-4 control-label" for="relacionamento_dependente">Percentual do reajuste</label>
+            <div class="col-md-5">
+              <input id="nome_departamento" name="relacionamento_dependente" type="number" placeholder="Digite o relacionamento do dependente com funcionario" class="form-control input-md"
+                ng-required="required" ng-model="dados.funcionario.percentual">
+            </div>
+          </div>
+        </fieldset>
+        <div style="float: right">
+          <button type="button" class="btn btn-white" ng-click="ativarTab('dependente')">Cancelar</button>
+          <button type="button" class="btn btn-primary" ng-click="reajustar_por_percentual()">Salvar</button>
         </div>
       </form>
     </div>

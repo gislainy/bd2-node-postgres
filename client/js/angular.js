@@ -10,7 +10,8 @@ angular.module('bd2Companhia', [])
       departamento: {},
       dependente: {
         data_nasc: new Date()
-      }
+      },
+      funcionario: {}
     };
     $scope.ativarTab = function (tab) {
       if ($scope.tabActive != tab)
@@ -62,7 +63,7 @@ angular.module('bd2Companhia', [])
           .then(function (response) {
             $scope.dependente = response && response.data;
             $scope.tabActive = 'dependente';
-            $scope.dados.departamento = {};
+            $scope.dados.dependente = {};
             $scope.mostrarAlerta('Dependente cadastrado com sucesso');
 
           },
@@ -70,7 +71,7 @@ angular.module('bd2Companhia', [])
             console.dir({ response })
           });
       else {
-        $scope.mostrarAlerta('Por favor, preencha todos os dados do departamento', true);
+        $scope.mostrarAlerta('Por favor, preencha todos os dados do dependente', true);
       }
     };
     $scope.gerentes_departamentos = [];
@@ -112,4 +113,33 @@ angular.module('bd2Companhia', [])
       )[0];
       $scope.tabActive = 'gerentes_departamentos_form';
     }
+    $scope.clickReajustarPorPecentual = (funcionarioId) => {
+      $scope.dados.funcionario = $scope.funcionario.filter((dep) =>
+        dep.cpf === funcionarioId
+      )[0];
+      $scope.dados.funcionario.percentual = 0;
+      $scope.tabActive = 'reajustar_por_percentual';
+    }
+    $scope.reajustar_por_percentual = () => {
+      var dep_dados = $scope.dados.funcionario;
+      if (dep_dados && dep_dados.percentual)
+        $http({
+          url: '/api/v1/funcionario/percentual',
+          method: "POST",
+          data: { 'funcionario': dep_dados }
+        })
+          .then(function (response) {
+            $scope.funcionario = response && response.data;
+            $scope.tabActive = 'funcionario';
+            $scope.dados.funcionario = {};
+            $scope.mostrarAlerta('Percentual alterado com sucesso');
+
+          },
+          function (response) { // optional
+            console.dir({ response })
+          });
+      else {
+        $scope.mostrarAlerta('Por favor, preencha todos o campos de percentual', true);
+      }
+    };
   });
