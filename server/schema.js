@@ -191,7 +191,65 @@ CREATE TRIGGER t_atualiza_cpf_supervisor
 		EXECUTE PROCEDURE atualiza_cpf_supervisionados();
 CREATE TRIGGER t_atualiza_cpf_supervisor_exclusao
 	AFTER DELETE ON departamento
-		FOR EACH ROW EXECUTE PROCEDURE atualiza_cpf_supervisionados();		
+		FOR EACH ROW EXECUTE PROCEDURE atualiza_cpf_supervisionados();
+CREATE OR REPLACE FUNCTION f_reajusta_salario(bpchar, numeric) RETURNS SETOF funcionario
+AS $$
+    DECLARE
+    	cpfFuncionario	bpchar = $1;
+    	percReajuste 	numeric = $2;
+    	salarioAtual	numeric;
+    	salarioProximo	numeric;
+	BEGIN
+        --
+        -- Está função será responsável por atualizar os dados dos funcionários 
+        -- de um departamento que teve o seu gerente alterado
+        --
+        salarioAtual := (select salario 
+        				 from funcionario 
+        				 where cpf = cpfFuncionario);
+        
+        salarioProximo := (salarioAtual * (1 + percReajuste/100)); 
+        
+        update funcionario 
+        	set salario = salarioProximo 
+        where cpf = cpfFuncionario;
+        
+        return query select * from funcionario where cpf = cpfFuncionario;
+        return;
+   END;
+$$ LANGUAGE plpgsql;
+CREATE OR REPLACE FUNCTION f_atualiza_salario_por_dependente() RETURNS TRIGGER 
+AS $$
+    DECLARE
+    	idadeDependente integer;
+	BEGIN
+        --
+        -- Está função irá atualizar o salário dos funcionários que 
+        -- possuirem dependentes menores que 21 anos de idade, em 2% por funcionário
+        --
+        idadeDependente := (select extract(year from age(ROW.data_nasc))); 
+		IF (idadeDependente =< 21) then
+	        IF (TG_OP = 'DELETE') THEN
+	            select f_reajusta_salario(OLD.cpf, -2);
+	            IF (NOT FOUND) THEN 
+	            	RETURN NULL; 
+	            END IF;
+	            RETURN NEW;
+	
+	        ELSIF (TG_OP = 'INSERT') THEN
+	        	SELECT f_reajusta_salario(NEW.cpf, 2);					
+	            IF (NOT FOUND) THEN 
+	            	RETURN NULL; 
+	            END IF;
+	        	RETURN NEW;
+	        END IF;
+	    END IF;
+    END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER t_bonifica_por_depentendes_insercao
+AFTER INSERT OR DELETE ON dependente
+    FOR EACH ROW EXECUTE PROCEDURE f_atualiza_salario_por_dependente();		
 `
 
 var pg = require('pg');

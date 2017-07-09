@@ -180,7 +180,7 @@ router.post('/api/v1/funcionario/percentual', (req, res, next) => {
       return res.status(500).json({ success: false, data: err });
     }
 
-    client.query('SELECT reajustar_salario(cpf_do_funcionário, percentual) values($1, $2)',
+    client.query('SELECT f_reajusta_salario($1, $2)',
       [data.cpf, data.percentual]);
 
     const query = client.query('SELECT * FROM funcionario');
