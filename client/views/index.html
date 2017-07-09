@@ -45,7 +45,7 @@
             <td>{{func.data_nasc | date:'dd-MM-yyyy'}}</td>
             <td>{{func.salario}}</td>
             <td>{{func.dno}}</td>
-            <td><label class="label label-primary"  ng-click="clickReajustarPorPecentual(func.cpf)">Reajustar por percentual</label></td>
+            <td><label class="label label-primary" ng-click="clickReajustarPorPecentual(func.cpf)">Reajustar por percentual</label></td>
           </tr>
         </tbody>
       </table>
@@ -193,8 +193,8 @@
           <div class="form-group">
             <label class="col-md-4 control-label" for="relacionamento_dependente">Relacionamento</label>
             <div class="col-md-5">
-              <input id="nome_departamento" name="relacionamento_dependente" type="text" placeholder="Digite o relacionamento do dependente com funcionario" class="form-control input-md"
-                ng-required="required" ng-model="dados.dependente.relacionamento">
+              <input id="nome_departamento" name="relacionamento_dependente" type="text" placeholder="Digite o relacionamento do dependente com funcionario"
+                class="form-control input-md" ng-required="required" ng-model="dados.dependente.relacionamento">
             </div>
           </div>
           <!-- Select Basic -->
@@ -246,9 +246,13 @@
           <div class="form-group">
             <label class="col-md-4 control-label" for="relacionamento_dependente">Percentual do reajuste</label>
             <div class="col-md-5">
-              <input id="nome_departamento" name="relacionamento_dependente" type="number" placeholder="Digite o relacionamento do dependente com funcionario" class="form-control input-md"
-                ng-required="required" ng-model="dados.funcionario.percentual">
+              <input id="nome_departamento" name="relacionamento_dependente" type="number" placeholder="Digite o relacionamento do dependente com funcionario"
+                class="form-control input-md" ng-required="required" ng-model="dados.funcionario.percentual">
             </div>
+          </div>
+          <div st class="alert alert-info">
+            <p>Salário atual = <b>{{dados.funcionario.salario | currency}}</b></p>
+            <p>Salário reajustado = <b>{{dados.funcionario.salario * (1 + (dados.funcionario.percentual/100)) | currency}} </b> </p>
           </div>
         </fieldset>
         <div style="float: right">
@@ -267,4 +271,5 @@
   crossorigin="anonymous"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.6/angular.min.js"></script>
 <script src="js/angular.js"></script>
+
 </html>
