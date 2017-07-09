@@ -1,6 +1,5 @@
 # bd2-node-postgres
-Trabalho de Banco de Dados 2 implementado com node + postgres
-Pelo alunos: [@fjcs7](https://github.com/fjcs7) e [@gislainy](https://github.com/gislainy)
+Trabalho de Banco de Dados 2 implementado com node + postgres. Por: [@fjcs7](https://github.com/fjcs7) e [@gislainy](https://github.com/gislainy)
 ## Executar
 
 Realizar clone do projeto 
