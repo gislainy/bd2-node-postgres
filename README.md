@@ -1,5 +1,8 @@
 # bd2-node-postgres
 Trabalho de Banco de Dados 2 implementado com node + postgres. Por: [@fjcs7](https://github.com/fjcs7) e [@gislainy](https://github.com/gislainy)
+
+Está disponível nesta url http://bd2-node-postgres.herokuapp.com/
+
 ## Executar
 
 Realizar clone do projeto 
