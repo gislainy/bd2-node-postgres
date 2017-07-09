@@ -136,10 +136,63 @@ AS $$
 $$ LANGUAGE plpgsql;
 CREATE TRIGGER intercepta_alteracao_v_gerentes_departamentos
 	INSTEAD OF INSERT OR UPDATE OR DELETE ON bd2.v_gerentes_departamentos
-		FOR EACH ROW EXECUTE PROCEDURE operacoes_em_gerentes_departamentos();
+		FOR EACH ROW EXECUTE PROCEDURE operacoes_em_gerentes_departamentos();	
+CREATE OR REPLACE FUNCTION atualiza_cpf_supervisionados() RETURNS TRIGGER 
+AS $$
+    DECLARE
+    	cpfDoSuperior	bpchar;
+    	dnoSuperior 	integer;
+	BEGIN
+        --
+        -- Está função será responsável por atualizar os dados dos funcionários 
+        -- de um departamento que teve o seu gerente alterado
+        --
+        IF (TG_OP = 'DELETE') THEN
+        	
+        	cpfDoSuperior := (SELECT sup.super_cpf 
+	        				  FROM funcionario sup 
+	            			  WHERE sup.cpf = OLD.ger_cpf);
+            				
+            dnoSuperior := (SELECT COALESCE(sup.dno, 0) 
+	        				FROM funcionario sup 
+	            			WHERE sup.cpf = cpfDoSuperior);
+            
+            UPDATE funcionario 
+            	SET super_cpf = cpfDoSuperior,
+            		dno = dnoSuperior
+            WHERE funcionario.super_cpf = OLD.ger_cpf
+            	  AND funcionario.dno = OLD.dnumero;
+            
+            IF (NOT FOUND) THEN 
+            	RETURN NULL; 
+            END IF;
+            
+            RETURN NEW;
 
+        ELSIF (TG_OP = 'UPDATE') THEN
+            
+        	UPDATE funcionario 
+            	SET super_cpf = NEW.ger_cpf
+            WHERE funcionario.super_cpf = OLD.ger_cpf
+            	  AND funcionario.dno = NEW.dnumero;
+
+            IF (NOT FOUND) THEN 
+            	RETURN NULL; 
+            END IF;
+            
+            RETURN NEW;
+        END IF;
+    END;
+$$ LANGUAGE plpgsql;
+CREATE TRIGGER t_atualiza_cpf_supervisor
+	AFTER UPDATE ON departamento
+		FOR EACH ROW 
+		WHEN (OLD.ger_cpf <> NEW.ger_cpf)
+		EXECUTE PROCEDURE atualiza_cpf_supervisionados();
+CREATE TRIGGER t_atualiza_cpf_supervisor_exclusao
+	AFTER DELETE ON departamento
+		FOR EACH ROW EXECUTE PROCEDURE atualiza_cpf_supervisionados();		
 `
-
 
 var pg = require('pg');
 var conString = "postgres://kflbffbh:ndYmIVfIDNDOhRW_rtFftZWqiEXYfdbY@stampy.db.elephantsql.com:5432/kflbffbh";
