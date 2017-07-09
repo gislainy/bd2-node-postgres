@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const pg = require('pg');
 const path = require('path');
-const connectionString = process.env.DATABASE_URL || "postgres://postgres:1234@localhost/bd2companhia";
+const connectionString = process.env.DATABASE_URL || "postgres://kflbffbh:ndYmIVfIDNDOhRW_rtFftZWqiEXYfdbY@stampy.db.elephantsql.com:5432/kflbffbh";
 router.get('/', (req, res, next) => {
   res.sendFile(path.join(
     __dirname, '..', 'client', 'views', 'index.html'));

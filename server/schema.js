@@ -1,7 +1,7 @@
 var schema = `
-drop schema public cascade;
-create schema public;
-CREATE TABLE funcionario (
+drop schema bd2 cascade;
+create schema bd2;
+CREATE TABLE bd2.funcionario (
     nome character varying(15) not null,
     inicial char,
     sobrenome character varying(15) not null,
@@ -15,7 +15,7 @@ CREATE TABLE funcionario (
     primary key (cpf),
     foreign key (super_cpf) references funcionario(cpf)
 );
-CREATE TABLE departamento (
+CREATE TABLE bd2.departamento (
     dnome character varying(15) not null unique,
     dnumero integer not null primary key,
     ger_cpf character(9) not null,
@@ -23,26 +23,26 @@ CREATE TABLE departamento (
     foreign key (ger_cpf) references funcionario(cpf)
 );
 alter table funcionario add constraint func_depart_fkey foreign key (super_cpf) references funcionario(cpf);
-CREATE TABLE dept_locais (
+CREATE TABLE bd2.dept_locais (
     dnumero integer not null,
     dlocal character varying(15) not null,
     constraint dept_locais_pkey primary key (dnumero, dlocal),
     constraint dept_locais_fkey foreign key (dnumero) references departamento(dnumero)
 );
-CREATE TABLE projeto (
+CREATE TABLE bd2.projeto (
     pnome character varying(18) not null,
     pnumero integer not null primary key,
     plocal character varying(15),
     dnum integer not null references departamento(dnumero),
     unique (pnome)
 );
-CREATE TABLE func_proj (
+CREATE TABLE bd2.func_proj (
     cpf character(9) not null references funcionario(cpf),
     pno integer not null references projeto(pnumero),
     hours numeric(3,1) not null,
     primary key (cpf, pno)
 );
-CREATE TABLE dependente (
+CREATE TABLE bd2.dependente (
     cpf character(9) NOT NULL references funcionario(cpf),
    nome character varying(15) NOT NULL,
     gen character(1),
@@ -50,7 +50,7 @@ CREATE TABLE dependente (
     relacionamento varchar(8),
     primary key (cpf, nome)
 );
-CREATE OR REPLACE VIEW v_gerentes_departamentos AS(
+CREATE OR REPLACE VIEW bd2.v_gerentes_departamentos AS(
 	SELECT  dp.dnumero, 
 			dp.dnome, 
 			dp.ger_inicio_data,
@@ -68,7 +68,7 @@ CREATE OR REPLACE VIEW v_gerentes_departamentos AS(
 						dp.ger_cpf = func.cpf
 	ORDER BY dp.dnumero
 );
-CREATE OR REPLACE FUNCTION operacoes_em_gerentes_departamentos() RETURNS TRIGGER 
+CREATE OR REPLACE FUNCTION bd2.operacoes_em_gerentes_departamentos() RETURNS TRIGGER 
 AS $$
     BEGIN
         --
@@ -135,14 +135,14 @@ AS $$
     END;
 $$ LANGUAGE plpgsql;
 CREATE TRIGGER intercepta_alteracao_v_gerentes_departamentos
-	INSTEAD OF INSERT OR UPDATE OR DELETE ON v_gerentes_departamentos
+	INSTEAD OF INSERT OR UPDATE OR DELETE ON bd2.v_gerentes_departamentos
 		FOR EACH ROW EXECUTE PROCEDURE operacoes_em_gerentes_departamentos();
 
 `
 
 
 var pg = require('pg');
-var conString = "postgres://postgres:1234@localhost/bd2companhia";
+var conString = "postgres://kflbffbh:ndYmIVfIDNDOhRW_rtFftZWqiEXYfdbY@stampy.db.elephantsql.com:5432/kflbffbh";
 
 pg.connect(conString, function(err, client, done) {
   if (err) {
