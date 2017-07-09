@@ -24,7 +24,6 @@ angular.module('bd2Companhia', [])
         $scope.alerta.tipo = 'danger';
       else $scope.alerta.tipo = 'sucess';
     }
-    // Get funcionário all todos
     $scope.funcionario = [];
     $http({
       method: 'GET',
@@ -107,12 +106,6 @@ angular.module('bd2Companhia', [])
         $scope.mostrarAlerta('Por favor, preencha todos os dados do departamento', true);
       }
     };
-    $scope.departamento_editar = (departamentoId) => {
-      $scope.dados.departamento = $scope.gerentes_departamentos.filter((dep) =>
-        dep.dnome === departamentoId
-      )[0];
-      $scope.tabActive = 'gerentes_departamentos_form';
-    }
     $scope.clickReajustarPorPecentual = (funcionarioId) => {
       $scope.dados.funcionario = $scope.funcionario.filter((dep) =>
         dep.cpf === funcionarioId
