@@ -227,22 +227,30 @@ AS $$
         -- Está função irá atualizar o salário dos funcionários que 
         -- possuirem dependentes menores que 21 anos de idade, em 2% por funcionário
         --
-        idadeDependente := (select extract(year from age(ROW.data_nasc))); 
-		IF (idadeDependente =< 21) then
-	        IF (TG_OP = 'DELETE') THEN
-	            select f_reajusta_salario(OLD.cpf, -2);
-	            IF (NOT FOUND) THEN 
-	            	RETURN NULL; 
-	            END IF;
-	            RETURN NEW;
-	
-	        ELSIF (TG_OP = 'INSERT') THEN
-	        	SELECT f_reajusta_salario(NEW.cpf, 2);					
-	            IF (NOT FOUND) THEN 
-	            	RETURN NULL; 
-	            END IF;
-	        	RETURN NEW;
+
+        IF (TG_OP = 'DELETE') then
+			
+        	idadeDependente := (select extract(year from age(OLD.data_nasc))); 
+			IF (idadeDependente <= 21) then
+				PERFORM f_reajusta_salario(OLD.cpf, -2);
+			END IF;
+	         
+            IF (NOT FOUND) THEN 
+            	RETURN NULL; 
+            END IF;
+            RETURN NEW;
+
+        ELSIF (TG_OP = 'INSERT') THEN
+	        
+        	idadeDependente := (select extract(year from age(NEW.data_nasc))); 
+			IF (idadeDependente <= 21) then
+	        	PERFORM f_reajusta_salario(NEW.cpf, 2);					
 	        END IF;
+            
+	        IF (NOT FOUND) THEN 
+        		RETURN NULL; 
+            END IF;
+        	RETURN NEW;
 	    END IF;
     END;
 $$ LANGUAGE plpgsql;
