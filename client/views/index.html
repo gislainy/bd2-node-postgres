@@ -50,7 +50,7 @@
     </div>
     <div ng-show="tabActive == 'dependente'">
       <div style="float: right">
-        <button type="button" class="btn btn-primary" ng-click="ativarTab('gerentes_dependente_form')">Adicionar departamento</button>
+        <button type="button" class="btn btn-primary" ng-click="ativarTab('gerentes_dependente_form')">Adicionar dependente</button>
       </div>
       <table class="table table-sm table-hover">
         <thead class="thead-inverse">
@@ -151,7 +151,7 @@
             <label class="col-md-4 control-label" for="nome_dependente">Nome dependente</label>
             <div class="col-md-5">
               <input id="numero_departamento" name="nome_dependente" type="text" placeholder="Digite o nome do dependente" class="form-control input-md"
-                ng-required="required" ng-model="dados.dependente.nome">
+                ng-required="required" ng-model="dados.dependente.nome" size=15 maxlength=15>
             </div>
           </div>
           <div class="form-group">
@@ -169,7 +169,7 @@
             </div>
           </div>
           <div class="form-group">
-            <label class="col-md-4 control-label" for="gerente_departamento">Gerente</label>
+            <label class="col-md-4 control-label" for="gerente_departamento">Responsável</label>
             <div class="col-md-5">
               <select id="gerente_departamento" name="gerente_departamento" class="form-control" ng-model="dados.dependente.cpf">
                 <option ng-repeat="func in funcionario" value="{{func.cpf}}">{{func.nome}}</option>
