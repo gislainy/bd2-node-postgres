@@ -1,6 +1,3 @@
-var schema = `
-drop schema public cascade;
-create schema public;
 CREATE TABLE funcionario (
     nome character varying(15) not null,
     inicial char,
@@ -232,22 +229,3 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER t_bonifica_por_depentendes_insercao
 AFTER INSERT OR DELETE ON dependente
     FOR EACH ROW EXECUTE PROCEDURE f_atualiza_salario_por_dependente();		
-`
-
-var pg = require('pg');
-var conString = "postgres://kflbffbh:ndYmIVfIDNDOhRW_rtFftZWqiEXYfdbY@stampy.db.elephantsql.com:5432/kflbffbh";
-var conString = "postgres://postgres:1234@localhost/bd2companhia";
-
-pg.connect(conString, function(err, client, done) {
-  if (err) {
-    return console.error('error fetching client from pool', err);
-  }
-  client.query(schema, function(err, result) {
-    done();
-    if (err) {
-      return console.error('error running query', err);
-    }
-    console.log(result.rows);
-  });
-
-});

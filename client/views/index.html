@@ -91,6 +91,7 @@
             <th>Sexo do gerente</th>
             <th>Endereço do Gerente</th>
             <th>Data de inicio na gerência</th>
+            <th></th>
           </tr>
         </thead>
         <tbody ng-repeat="func_dep in gerentes_departamentos">
@@ -106,6 +107,7 @@
             <td>{{func_dep.gen}}</td>
             <td>{{func_dep.endereco}}</td>
             <td>{{func_dep.ger_inicio_data | date:'dd-MM-yyyy'}}</td>
+            <td><label class="label label-danger" ng-click="clickExcluirDepartamento(func_dep.dnumero)">Excluir departamento</label></td>
           </tr>
         </tbody>
       </table>

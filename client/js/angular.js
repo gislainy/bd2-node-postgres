@@ -16,6 +16,7 @@ angular.module('bd2Companhia', [])
     $scope.ativarTab = function (tab) {
       if ($scope.tabActive != tab)
         $scope.tabActive = tab;
+      $scope.alerta.mostrar = false;
     };
     $scope.mostrarAlerta = (mensagem, danger) => {
       $scope.alerta.mostrar = true;
@@ -133,6 +134,27 @@ angular.module('bd2Companhia', [])
           });
       else {
         $scope.mostrarAlerta('Por favor, preencha todos o campos de percentual', true);
+      }
+    };
+    $scope.clickExcluirDepartamento = (departamentoId) => {
+      if (departamentoId) {
+        var possuiReferencia = $scope.funcionario.some((func) => func.dno === departamentoId);
+        if (!possuiReferencia) {
+          $http({
+            url: '/api/v1/gerentes_departamentos/' + departamentoId,
+            method: "delete",
+            data: { 'departamentoId': departamentoId }
+          })
+            .then(function (response) {
+              $scope.gerentes_departamentos = response && response.data;
+              $scope.tabActive = 'gerentes_departamentos';
+              $scope.mostrarAlerta('Departamento excluido com sucesso');
+
+            },
+            function (response) { // optional
+              console.dir({ response })
+            });
+        } else $scope.mostrarAlerta('Esse departamento não pode ser excluído pois possui dependência com funcionário', true);
       }
     };
   });

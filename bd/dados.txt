@@ -1,4 +1,3 @@
-var data = `
 alter table funcionario alter column dno drop not null;
 
 INSERT INTO funcionario VALUES 
@@ -191,21 +190,3 @@ INSERT INTO func_proj VALUES ('666666612',61,40.0);
 INSERT INTO func_proj VALUES ('666666613',61,30.0);
 INSERT INTO func_proj VALUES ('666666613',62,10.0);
 INSERT INTO func_proj VALUES ('666666613',63,10.0);
-`
-
-var pg = require('pg');
-var conString = "postgres://postgres:1234@localhost/bd2companhia";
-
-pg.connect(conString, function(err, client, done) {
-  if (err) {
-    return console.error('error fetching client from pool', err);
-  }
-  client.query(data, function(err, result) {
-    done();
-    if (err) {
-      return console.error('error running query', err);
-    }
-    console.log(result.rows);
-  });
-
-});

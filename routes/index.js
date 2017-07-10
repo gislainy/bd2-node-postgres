@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const pg = require('pg');
 const path = require('path');
-const connectionString = process.env.DATABASE_URL || "postgres://postgres:1234@localhost/bd2companhia";
+const connectionString = process.env.DATABASE_URL || "postgres://ddphphss:FlbvOx3zbM6-gEObIs4IZUpAE0I90q8E@pellefant.db.elephantsql.com:5432/ddphphss";
 router.get('/', (req, res, next) => {
   res.sendFile(path.join(
     __dirname, '..', 'client', 'views', 'index.html'));
@@ -171,7 +171,7 @@ router.post('/api/v1/funcionario/percentual', (req, res, next) => {
   const results = [];
 
   var data = req.body.funcionario || {};
-  console.log({data})
+  console.log({ data })
   pg.connect(connectionString, (err, client, done) => {
 
     if (err) {
@@ -195,5 +195,24 @@ router.post('/api/v1/funcionario/percentual', (req, res, next) => {
     });
   });
 });
-
+router.delete('/api/v1/gerentes_departamentos/:departamentoId', (req, res, next) => {
+  const results = [];
+  const departamentoId = req.params.departamentoId;
+  pg.connect(connectionString, (err, client, done) => {
+    if (err) {
+      done();
+      console.log(err);
+      return res.status(500).json({ success: false, data: err });
+    }
+    client.query('DELETE FROM v_gerentes_departamentos WHERE dnumero=($1)', [departamentoId]);
+    var query = client.query('SELECT * FROM v_gerentes_departamentos');
+    query.on('row', (row) => {
+      results.push(row);
+    });
+    query.on('end', () => {
+      done();
+      return res.json(results);
+    });
+  });
+});
 module.exports = router;

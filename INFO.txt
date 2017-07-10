@@ -1,0 +1,4 @@
+Para informações referente ao como executar o projeto veja na pasta /bd2-node-postgres/README.md
+
+Este trabalho foi feito pelos alunos:
+Fernando Junio e Gislainy Crisóstomo 
