@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const pg = require('pg');
 const path = require('path');
-const connectionString = process.env.DATABASE_URL || "postgres://kflbffbh:ndYmIVfIDNDOhRW_rtFftZWqiEXYfdbY@stampy.db.elephantsql.com:5432/kflbffbh";
+const connectionString = process.env.DATABASE_URL || "postgres://postgres:1234@localhost/bd2companhia";
 router.get('/', (req, res, next) => {
   res.sendFile(path.join(
     __dirname, '..', 'client', 'views', 'index.html'));
@@ -16,7 +16,7 @@ router.get('/api/v1/funcionario/all', (req, res, next) => {
       console.log(err);
       return res.status(500).json({ success: false, data: err });
     }
-    const query = client.query('SELECT * FROM funcionario');
+    const query = client.query('SELECT * FROM funcionario ORDER BY cpf ASC');
     query.on('row', (row) => {
       results.push(row);
     });
@@ -81,7 +81,7 @@ router.get('/api/v1/gerentes_departamentos/all', (req, res, next) => {
       return res.status(500).json({ success: false, data: err });
     }
 
-    const query = client.query('SELECT * FROM v_gerentes_departamentos');
+    const query = client.query('SELECT * FROM v_gerentes_departamentos ');
 
     query.on('row', (row) => {
       results.push(row);
@@ -115,7 +115,7 @@ router.post('/api/v1/gerentes_departamentos/new', (req, res, next) => {
       return res.status(500).json({ success: false, data: err });
     }
 
-    client.query('INSERT INTO v_gerentes_departamentos(dnome, dnumero, ger_cpf, ger_inicio_data) values($1, $2, $3, $4)',
+    client.query('INSERT INTO v_gerentes_departamentos(dnome, dnumero, cpf, ger_inicio_data) values($1, $2, $3, $4)',
       [data.dnome, data.dnumero, data.ger_cpf, data.ger_inicio_data]);
 
     const query = client.query('SELECT * FROM v_gerentes_departamentos');
@@ -171,7 +171,7 @@ router.post('/api/v1/funcionario/percentual', (req, res, next) => {
   const results = [];
 
   var data = req.body.funcionario || {};
-
+  console.log({data})
   pg.connect(connectionString, (err, client, done) => {
 
     if (err) {
@@ -183,7 +183,7 @@ router.post('/api/v1/funcionario/percentual', (req, res, next) => {
     client.query('SELECT f_reajusta_salario($1, $2)',
       [data.cpf, data.percentual]);
 
-    const query = client.query('SELECT * FROM funcionario');
+    const query = client.query('SELECT * FROM funcionario ORDER BY cpf ASC');
 
     query.on('row', (row) => {
       results.push(row);
