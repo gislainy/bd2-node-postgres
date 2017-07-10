@@ -1,0 +1,152 @@
+CREATE OR REPLACE FUNCTION operacoes_em_gerentes_departamentos() RETURNS TRIGGER 
+AS $$
+    BEGIN
+        --
+        -- Está função será responsável por iterceptar qual a operação realizada na visão v_gerentes_departamentos
+        -- e refletir as alterações nas devidas tabelas (departamento e funcionário)
+        --
+        IF (TG_OP = 'DELETE') THEN
+            DELETE FROM departamento WHERE departamento.dnumero = OLD.dnumero;
+            IF (NOT FOUND) THEN 
+            	RETURN NULL; 
+            END IF;
+            
+            RETURN NEW;
+
+        ELSIF (TG_OP = 'UPDATE') THEN
+            UPDATE departamento 
+            SET dnome = NEW.dnome, 
+            	ger_cpf = NEW.cpf,
+            	ger_inicio_data = NEW.ger_inicio_data
+            WHERE departamento.dnumero = OLD.dnumero;
+            
+            IF (NOT FOUND) THEN 
+            	RETURN NULL; 
+            END IF;
+            
+            RETURN NEW;
+
+        ELSIF (TG_OP = 'INSERT') THEN
+        
+        	INSERT INTO departamento 
+            		VALUES(NEW.dnome,
+            			   NEW.dnumero,
+            			   NEW.cpf,
+            			   NEW.ger_inicio_data);
+            
+			RETURN NEW;
+        END IF;
+    END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION atualiza_cpf_supervisionados() RETURNS TRIGGER 
+AS $$
+    DECLARE
+    	cpfDoSuperior	bpchar;
+    	dnoSuperior 	integer;
+	BEGIN
+        --
+        -- Está função será responsável por atualizar os dados dos funcionários 
+        -- de um departamento que teve o seu gerente alterado
+        --
+        IF (TG_OP = 'DELETE') THEN
+        	
+        	cpfDoSuperior := (SELECT sup.super_cpf 
+	        				  FROM funcionario sup 
+	            			  WHERE sup.cpf = OLD.ger_cpf);
+            				
+            dnoSuperior := (SELECT COALESCE(sup.dno, 0) 
+	        				FROM funcionario sup 
+	            			WHERE sup.cpf = cpfDoSuperior);
+            
+            UPDATE funcionario 
+            	SET super_cpf = cpfDoSuperior,
+            		dno = dnoSuperior
+            WHERE funcionario.super_cpf = OLD.ger_cpf
+            	  AND funcionario.dno = OLD.dnumero;
+            
+            IF (NOT FOUND) THEN 
+            	RETURN NULL; 
+            END IF;
+            
+            RETURN NEW;
+
+        ELSIF (TG_OP = 'UPDATE') THEN
+            
+        	UPDATE funcionario 
+            	SET super_cpf = NEW.ger_cpf
+            WHERE funcionario.super_cpf = OLD.ger_cpf
+            	  AND funcionario.dno = NEW.dnumero;
+
+            IF (NOT FOUND) THEN 
+            	RETURN NULL; 
+            END IF;
+            
+            RETURN NEW;
+        END IF;
+    END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION f_reajusta_salario(bpchar, numeric) RETURNS SETOF funcionario
+AS $$
+    DECLARE
+    	cpfFuncionario	bpchar = $1;
+    	percReajuste 	numeric = $2;
+    	salarioAtual	numeric;
+    	salarioProximo	numeric;
+	BEGIN
+        --
+        -- Está função será responsável por atualizar os dados dos funcionários 
+        -- de um departamento que teve o seu gerente alterado
+        --
+        salarioAtual := (select salario 
+        				 from funcionario 
+        				 where cpf = cpfFuncionario);
+        
+        salarioProximo := (salarioAtual * (1 + percReajuste/100)); 
+        
+        update funcionario 
+        	set salario = salarioProximo 
+        where cpf = cpfFuncionario;
+        
+        return query select * from funcionario where cpf = cpfFuncionario;
+        return;
+   END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION f_atualiza_salario_por_dependente() RETURNS TRIGGER 
+AS $$
+    DECLARE
+    	idadeDependente integer;
+	BEGIN
+        --
+        -- Está função irá atualizar o salário dos funcionários que 
+        -- possuirem dependentes menores que 21 anos de idade, em 2% por funcionário
+        --
+
+        IF (TG_OP = 'DELETE') then
+			
+        	idadeDependente := (select extract(year from age(OLD.data_nasc))); 
+			IF (idadeDependente <= 21) then
+				PERFORM f_reajusta_salario(OLD.cpf, -2);
+			END IF;
+	         
+            IF (NOT FOUND) THEN 
+            	RETURN NULL; 
+            END IF;
+            RETURN NEW;
+
+        ELSIF (TG_OP = 'INSERT') THEN
+	        
+        	idadeDependente := (select extract(year from age(NEW.data_nasc))); 
+			IF (idadeDependente <= 21) then
+	        	PERFORM f_reajusta_salario(NEW.cpf, 2);					
+	        END IF;
+            
+	        IF (NOT FOUND) THEN 
+        		RETURN NULL; 
+            END IF;
+        	RETURN NEW;
+	    END IF;
+    END;
+$$ LANGUAGE plpgsql;

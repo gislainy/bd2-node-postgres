@@ -1,0 +1,36 @@
+CREATE OR REPLACE VIEW v_gerentes_departamentos AS(
+	SELECT  dp.dnumero, 
+			dp.dnome, 
+			dp.ger_inicio_data,
+			func.nome, 
+			func.sobrenome, 
+			func.inicial, 
+			func.cpf, 
+			func.data_nasc, 
+			func.endereco, 
+			func.gen, 
+			func.salario, 
+			func.super_cpf
+	FROM departamento dp 
+			INNER JOIN funcionario func ON
+						dp.ger_cpf = func.cpf
+	ORDER BY dp.dnumero
+);
+
+CREATE TRIGGER intercepta_alteracao_v_gerentes_departamentos
+	INSTEAD OF INSERT OR UPDATE OR DELETE ON v_gerentes_departamentos
+		FOR EACH ROW EXECUTE PROCEDURE operacoes_em_gerentes_departamentos();	
+
+CREATE TRIGGER t_atualiza_cpf_supervisor
+	AFTER UPDATE ON departamento
+		FOR EACH ROW 
+		WHEN (OLD.ger_cpf <> NEW.ger_cpf)
+		EXECUTE PROCEDURE atualiza_cpf_supervisionados();
+
+CREATE TRIGGER t_atualiza_cpf_supervisor_exclusao
+	AFTER DELETE ON departamento
+		FOR EACH ROW EXECUTE PROCEDURE atualiza_cpf_supervisionados();
+
+CREATE TRIGGER t_bonifica_por_depentendes_insercao
+AFTER INSERT OR DELETE ON dependente
+    FOR EACH ROW EXECUTE PROCEDURE f_atualiza_salario_por_dependente();	
